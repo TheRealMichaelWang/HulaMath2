@@ -31,18 +31,19 @@ matrix::element HulaMath::matrix::set_element(std::vector<element>& args, HulaSc
 matrix::element HulaMath::matrix::to_print_str(std::vector<element>& args, HulaScript::instance& instance)
 {
 	std::stringstream ss;
-	ss << '[' << std::setw(6);
+	ss << '[';
 
 	for (size_t row = 0; row < rows; row++)
 	{
 		ss << "  ";
 		for (size_t col = 0; col < cols; col++)
 		{
-			ss << instance.get_value_print_string(at(row, col)) << std::setw(6);
+			ss << std::setw(col == 0 && row == 0 ? 5 : 6);
+			ss << instance.get_value_print_string(at(row, col));
 		}
 
 		if (row == rows - 1) {
-			ss << " ]";
+			ss << std::setw(6) << ']';
 		}
 		else {
 			ss << std::endl;
@@ -50,29 +51,6 @@ matrix::element HulaMath::matrix::to_print_str(std::vector<element>& args, HulaS
 	}
 
 	return instance.make_string(ss.str());
-}
-
-matrix* HulaMath::matrix::match_matrix_dim(element& matrix_value, HulaScript::instance& instance, std::optional<size_t> expected_rows, std::optional<size_t> expected_cols)
-{
-	auto* mat = dynamic_cast<matrix*>(matrix_value.foreign_obj(instance));
-	if (mat == nullptr) {
-		instance.panic("Expected matrix, got another object instead.", HulaScript::error_code::ERROR_TYPE);
-		return nullptr;
-	}
-
-	if (expected_rows.has_value() && mat->rows != expected_rows) {
-		std::stringstream ss;
-		ss << "Expected matrix with " << expected_rows.value() << " row(s), but got one with " << mat->rows << " row(s) instead.";
-		instance.panic(ss.str(), error_code::MATRIX_DIM_MISMATCH);
-	}
-
-	if (expected_cols.has_value() && mat->cols != expected_cols) {
-		std::stringstream ss;
-		ss << "Expected matrix with " << expected_cols.value() << " row(s), but got one with " << mat->cols << " row(s) instead.";
-		instance.panic(ss.str(), error_code::MATRIX_DIM_MISMATCH);
-	}
-
-	return mat;
 }
 
 std::unique_ptr<matrix::element[]> HulaMath::matrix::allocate_elements(size_t rows, size_t cols, std::vector<element>& vec)
@@ -97,6 +75,29 @@ void HulaMath::matrix::validate_index(size_t row, size_t col, HulaScript::instan
 		ss << "Col out of bounds: got " << col << ", expected col in [1, " << cols << "].";
 		instance.panic(ss.str(), HulaScript::error_code::ERROR_INDEX_OUT_OF_RANGE);
 	}
+}
+
+matrix* HulaMath::matrix::match_matrix_dim(element& matrix_value, HulaScript::instance& instance, std::optional<size_t> expected_rows, std::optional<size_t> expected_cols)
+{
+	auto* mat = dynamic_cast<matrix*>(matrix_value.foreign_obj(instance));
+	if (mat == nullptr) {
+		instance.panic("Expected matrix, got another object instead.", HulaScript::error_code::ERROR_TYPE);
+		return nullptr;
+	}
+
+	if (expected_rows.has_value() && mat->rows != expected_rows) {
+		std::stringstream ss;
+		ss << "Expected matrix with " << expected_rows.value() << " row(s), but got one with " << mat->rows << " row(s) instead.";
+		instance.panic(ss.str(), error_code::MATRIX_DIM_MISMATCH);
+	}
+
+	if (expected_cols.has_value() && mat->cols != expected_cols) {
+		std::stringstream ss;
+		ss << "Expected matrix with " << expected_cols.value() << " row(s), but got one with " << mat->cols << " row(s) instead.";
+		instance.panic(ss.str(), error_code::MATRIX_DIM_MISMATCH);
+	}
+
+	return mat;
 }
 
 HulaMath::matrix::matrix(size_t rows, size_t cols, std::unique_ptr<element[]>&& elements) : rows(rows), cols(cols), elements(std::move(elements))

@@ -11,4 +11,8 @@ namespace HulaMath {
 	DYNALO_EXPORT HulaScript::instance::value DYNALO_CALL mat(std::vector<HulaScript::instance::value>& args, HulaScript::instance& instance);
 	DYNALO_EXPORT HulaScript::instance::value DYNALO_CALL vec(std::vector<HulaScript::instance::value>& args, HulaScript::instance& instance);
 	DYNALO_EXPORT HulaScript::instance::value DYNALO_CALL vect(std::vector<HulaScript::instance::value>& args, HulaScript::instance& instance);
+	DYNALO_EXPORT HulaScript::instance::value DYNALO_CALL ident(std::vector<HulaScript::instance::value>& args, HulaScript::instance& instance);
+
+	DYNALO_EXPORT HulaScript::instance::value DYNALO_CALL catByRow(std::vector<HulaScript::instance::value>& args, HulaScript::instance& instance);
+	DYNALO_EXPORT HulaScript::instance::value DYNALO_CALL catByCol(std::vector<HulaScript::instance::value>& args, HulaScript::instance& instance);
 }
